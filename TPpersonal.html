@@ -2,10 +2,13 @@
 <html lang="es">
 <head>
   <meta charset="utf-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover, interactive-widget=resizes-content">
   <title>TP Personal · Infovis</title>
   <meta name="description" content="Cuatro visualizaciones armadas con Flourish, Tableau Public y Datawrapper.">
   <meta name="color-scheme" content="light">
+  <!-- Una sola barra de estado: la pagina esta bloqueada en tema claro, asi que
+       el color de arriba de todo es siempre el mismo. -->
+  <meta name="theme-color" content="#f3f3f1">
 
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -37,7 +40,12 @@
       --shadow: 0 1px 2px rgba(22,23,27,.04), 0 14px 34px -16px rgba(22,23,27,.16);
 
       --nav-h: 64px;
-      --ease: cubic-bezier(.16,1,.3,1);
+      --safe-t: env(safe-area-inset-top, 0px);
+      --safe-b: env(safe-area-inset-bottom, 0px);
+
+      /* Curva unica para toda la pagina. Los ease-out nativos son
+         demasiado debiles para que el movimiento se lea como intencional. */
+      --ease-out: cubic-bezier(0.23, 1, 0.32, 1);
 
       --font-display: "Outfit", "Segoe UI Variable Display", "Segoe UI", system-ui, -apple-system, sans-serif;
       --font-body: "Segoe UI Variable Text", "Segoe UI", system-ui, -apple-system, "Helvetica Neue", Arial, sans-serif;
@@ -46,7 +54,12 @@
 
     *{ box-sizing: border-box; }
 
-    html{ -webkit-text-size-adjust: 100%; }
+    html{
+      -webkit-text-size-adjust: 100%;      /* nada de inflado de fuente en horizontal */
+      -webkit-tap-highlight-color: transparent;  /* sin flash gris al tocar */
+    }
+    /* Ojo: NO ponemos overscroll-behavior:none en html. Esto es un documento
+       que se scrollea, el pull-to-refresh del telefono es bienvenido. */
 
     @media (prefers-reduced-motion: no-preference){
       html{ scroll-behavior: smooth; }
@@ -63,10 +76,22 @@
       text-rendering: optimizeLegibility;
     }
 
+    /* Todo lo tocable: click inmediato (sin los 300ms de espera por
+       doble-tap) y sin seleccion de texto al mantener apretado. */
+    a, button, [role="button"]{ touch-action: manipulation; }
+    .brand, .nav-links a, .btn, .ext{
+      user-select: none;
+      -webkit-user-select: none;
+      -webkit-touch-callout: none;
+    }
+
     .wrap{
       max-width: 1160px;
       margin-inline: auto;
-      padding-inline: 32px;
+      /* max() con el inset: en horizontal sobre un telefono con notch el
+         contenido no se mete debajo de la muesca. */
+      padding-left: max(32px, env(safe-area-inset-left, 0px));
+      padding-right: max(32px, env(safe-area-inset-right, 0px));
     }
 
     /* ----------------------------- Navegacion ----------------------------- */
@@ -74,18 +99,22 @@
       position: sticky;
       top: 0;
       z-index: 20;
-      height: var(--nav-h);
+      padding-top: var(--safe-t);           /* la barra translucida llega hasta arriba de todo */
       background: rgba(243,243,241,.86);
       backdrop-filter: saturate(180%) blur(12px);
       -webkit-backdrop-filter: saturate(180%) blur(12px);
       border-bottom: 1px solid var(--line);
+      box-shadow: 0 0 0 0 rgba(22,23,27,0);
+      transition: box-shadow 200ms var(--ease-out);
     }
     @supports not (backdrop-filter: blur(1px)){
       .nav{ background: var(--paper); }
     }
+    /* Indicacion de estado: hay contenido pasando por debajo de la barra. */
+    .nav.is-stuck{ box-shadow: 0 6px 20px -12px rgba(22,23,27,.3); }
 
     .nav-inner{
-      height: 100%;
+      height: var(--nav-h);
       display: flex;
       align-items: center;
       justify-content: space-between;
@@ -113,20 +142,45 @@
       min-width: 0;
     }
     .nav-links a{
-      display: block;
+      display: flex;
+      align-items: center;
       padding: 7px 11px;
       border-radius: var(--r-chip);
       font-size: 13.5px;
       color: var(--ink-2);
       text-decoration: none;
       white-space: nowrap;
-      transition: background .25s var(--ease), color .25s var(--ease);
+      transition: background 200ms var(--ease-out), color 200ms var(--ease-out), transform 160ms var(--ease-out);
     }
-    .nav-links a:hover{ background: rgba(22,23,27,.05); color: var(--ink); }
+    .nav-links a:active{ transform: scale(0.97); }
     .nav-links a.is-active{ background: var(--accent-bg); color: var(--accent-ink); }
 
+    /* En telefono la nav pasa a ser una fila de chips que se desliza.
+       Antes se ocultaba entera, y con cuatro graficos de ~750px cada uno
+       quedarse sin atajos es justamente donde mas hacen falta. */
     @media (max-width: 880px){
-      .nav-links{ display: none; }
+      .brand{ display: none; }
+      .nav-inner{ gap: 0; }
+      .nav-links{
+        width: 100%;
+        gap: 6px;
+        overflow-x: auto;
+        overflow-y: hidden;
+        overscroll-behavior-x: contain;   /* deslizar los chips no dispara el "atras" del navegador */
+        scroll-snap-type: x proximity;
+        scrollbar-width: none;
+        -webkit-overflow-scrolling: touch;
+      }
+      .nav-links::-webkit-scrollbar{ display: none; }
+      .nav-links li{ scroll-snap-align: start; }
+      .nav-links a{
+        min-height: 40px;
+        padding: 0 14px;
+        border: 1px solid var(--line);
+        background: var(--surface);
+        outline-offset: -2px;             /* el foco no se corta contra el overflow */
+      }
+      .nav-links a.is-active{ border-color: #f2ddd0; }
     }
 
     /* Barra de progreso de lectura. Solo con scroll-driven animations
@@ -180,6 +234,7 @@
       display: inline-flex;
       align-items: center;
       gap: 10px;
+      min-height: 48px;
       padding: 13px 22px;
       border-radius: var(--r-chip);
       background: var(--ink);
@@ -188,10 +243,9 @@
       font-weight: 500;
       text-decoration: none;
       white-space: nowrap;
-      transition: transform .2s var(--ease), background .2s var(--ease);
+      transition: transform 160ms var(--ease-out), background 160ms var(--ease-out);
     }
-    .btn:hover{ background: #000; }
-    .btn:active{ transform: translateY(1px); }
+    .btn:active{ transform: scale(0.97); }
     .btn svg{ flex: none; }
 
     .hero-facts{
@@ -226,7 +280,7 @@
     /* ------------------------------ Secciones ------------------------------ */
     .viz{
       padding-block: 72px;
-      scroll-margin-top: calc(var(--nav-h) + 16px);
+      scroll-margin-top: calc(var(--nav-h) + var(--safe-t) + 16px);
     }
     .viz + .viz{ border-top: 1px solid var(--line); }
 
@@ -242,7 +296,7 @@
       font-family: var(--font-display);
       font-weight: 600;
       font-size: clamp(1.75rem, 3.4vw, 2.5rem);
-      line-height: 1.1;
+      line-height: 1.15;
       letter-spacing: -.028em;
       margin: 0;
     }
@@ -265,15 +319,17 @@
       white-space: nowrap;
     }
     .ext{
+      display: inline-flex;
+      align-items: center;
       font-size: 13.5px;
       color: var(--ink-2);
       text-decoration: none;
       border-bottom: 1px solid var(--line);
       padding-bottom: 1px;
       white-space: nowrap;
-      transition: color .2s var(--ease), border-color .2s var(--ease);
+      transition: color 200ms var(--ease-out), border-color 200ms var(--ease-out), transform 160ms var(--ease-out);
     }
-    .ext:hover{ color: var(--accent-ink); border-color: var(--accent); }
+    .ext:active{ transform: scale(0.97); }
 
     .note{
       margin: 0 0 28px;
@@ -296,6 +352,7 @@
       box-shadow: var(--shadow);
       padding: 20px;
       overflow: visible;
+      min-height: var(--min-h, 420px);
     }
     .viz-body > *{ max-width: 100%; }
 
@@ -322,35 +379,69 @@
       letter-spacing: .05em;
       color: var(--ink-3);
       pointer-events: none;
+      transition: opacity 200ms var(--ease-out), visibility 0s linear 200ms;
     }
-    .viz-loading[hidden]{ display: none; }
+    .viz-body.is-loaded .viz-loading{ opacity: 0; visibility: hidden; }
+
+    /* min-height solo reserva espacio MIENTRAS carga, para que la pagina no
+       pegue saltos. Una vez montado el grafico se libera: si no, las
+       visualizaciones mas bajas quedan con un colchon de blanco muerto
+       (en telefono eran 165px en Flourish y 369px en Datawrapper). */
+    .js .viz-body.is-loaded{ min-height: 0; }
+
+    /* El grafico aparece con un fundido corto en vez de saltar de golpe
+       cuando la herramienta termina de montarlo. Solo opacidad: nada de
+       transform sobre el contenedor de un iframe. */
+    .js .embed{ opacity: 0; }
+    .js .viz-body.is-loaded .embed{
+      opacity: 1;
+      transition: opacity 260ms var(--ease-out);
+    }
 
     @media (max-width: 720px){
-      .wrap{ padding-inline: 16px; }
+      .wrap{
+        padding-left: max(16px, env(safe-area-inset-left, 0px));
+        padding-right: max(16px, env(safe-area-inset-right, 0px));
+      }
       .viz{ padding-block: 48px; }
-      .viz-body{ padding: 12px; border-radius: 12px; }
+      .viz-body{
+        padding: 12px;
+        border-radius: 12px;
+        min-height: var(--min-h-sm, var(--min-h, 420px));
+      }
       .viz-loading{ inset: 12px 12px auto 12px; }
+
+      /* El link a la herramienta pasa a ser una fila propia con altura
+         de dedo, no un texto de 13px al lado del titulo. */
+      .sec-head{ gap: 14px; }
+      .sec-meta{ width: 100%; justify-content: space-between; }
+      .ext{
+        min-height: 44px;
+        padding: 0 14px;
+        border: 1px solid var(--line);
+        border-radius: var(--r-chip);
+        background: var(--surface);
+      }
     }
 
-    /* Aparicion suave del texto. Solo se activa con JS, asi que sin JS
-       se ve todo igual. No toca los contenedores de los graficos. */
+    /* Aparicion del texto al entrar en pantalla. Solo se activa con JS,
+       asi que sin JS se ve todo igual. No toca los graficos. */
     .js .reveal{
       opacity: 0;
-      transform: translateY(14px);
+      transform: translateY(8px);
     }
     .js .reveal.in{
       opacity: 1;
       transform: none;
-      transition: opacity .7s var(--ease), transform .7s var(--ease);
-    }
-    @media (prefers-reduced-motion: reduce){
-      .js .reveal{ opacity: 1; transform: none; transition: none; }
+      transition: opacity 300ms var(--ease-out) var(--d, 0ms),
+                  transform 300ms var(--ease-out) var(--d, 0ms);
     }
 
     /* -------------------------------- Footer -------------------------------- */
     .foot{
       border-top: 1px solid var(--line);
-      padding-block: 40px 56px;
+      padding-top: 40px;
+      padding-bottom: calc(56px + var(--safe-b));  /* libre del indicador de home */
       color: var(--ink-3);
       font-size: 14px;
     }
@@ -361,8 +452,12 @@
       justify-content: space-between;
       align-items: center;
     }
-    .foot a{ color: var(--ink-2); text-decoration: none; border-bottom: 1px solid var(--line); }
-    .foot a:hover{ color: var(--accent-ink); border-color: var(--accent); }
+    .foot a{
+      color: var(--ink-2);
+      text-decoration: none;
+      border-bottom: 1px solid var(--line);
+      transition: color 200ms var(--ease-out), border-color 200ms var(--ease-out);
+    }
 
     :where(a, .btn):focus-visible{
       outline: 2px solid var(--accent);
@@ -370,13 +465,31 @@
       border-radius: 6px;
     }
 
+    /* Todo el hover vive aca adentro. En tactil el navegador finge un hover
+       en el primer toque y lo deja pegado hasta que tocas otra cosa. */
+    @media (hover: hover) and (pointer: fine){
+      .nav-links a:hover{ background: rgba(22,23,27,.05); color: var(--ink); }
+      .btn:hover{ background: #000; }
+      .ext:hover{ color: var(--accent-ink); border-color: var(--accent); }
+      .foot a:hover{ color: var(--accent-ink); border-color: var(--accent); }
+    }
+
+    /* Menos movimiento, no cero: se van los desplazamientos, quedan los
+       fundidos que ayudan a entender que algo cambio. */
+    @media (prefers-reduced-motion: reduce){
+      .js .reveal{ transform: none; }
+      .js .reveal.in{ transition: opacity 200ms var(--ease-out) var(--d, 0ms); }
+      .btn:active, .nav-links a:active, .ext:active{ transform: none; }
+      .nav{ transition: none; }
+    }
+
     @media print{
       /* Nada de texto invisible en papel si la animacion no llego a correr. */
-      .js .reveal{ opacity: 1 !important; transform: none !important; }
+      .js .reveal, .js .embed{ opacity: 1 !important; transform: none !important; }
       .nav, .btn, .ext{ display: none !important; }
       body{ background: #fff; }
       .viz{ page-break-inside: avoid; padding-block: 24px; }
-      .viz-body{ box-shadow: none; }
+      .viz-body{ box-shadow: none; min-height: 0; }
     }
   </style>
 </head>
@@ -395,19 +508,22 @@
     <div class="progress" aria-hidden="true"></div>
   </nav>
 
+  <!-- Centinela para saber si la nav ya esta pegada arriba, sin escuchar scroll. -->
+  <div id="nav-sentinel" aria-hidden="true"></div>
+
   <header class="hero" id="top">
     <div class="wrap hero-grid">
       <div>
         <h1 class="reveal">Cuatro formas de mirar los datos</h1>
-        <p class="reveal">Trabajo práctico de visualización de información, armado con Flourish, Tableau Public y Datawrapper.</p>
-        <a class="btn reveal" href="#carrera-de-barras">
+        <p class="reveal" style="--d:50ms">Trabajo práctico de visualización de información, armado con Flourish, Tableau Public y Datawrapper.</p>
+        <a class="btn reveal" style="--d:100ms" href="#carrera-de-barras">
           Ver las visualizaciones
           <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 5v14"/><path d="m19 12-7 7-7-7"/></svg>
         </a>
       </div>
-      <div class="hero-facts reveal">
-        <div class="fact"><b>4</b><span>visualizaciones</span></div>
-        <div class="fact"><b>3</b><span>herramientas</span></div>
+      <div class="hero-facts">
+        <div class="fact reveal" style="--d:150ms"><b>4</b><span>visualizaciones</span></div>
+        <div class="fact reveal" style="--d:200ms"><b>3</b><span>herramientas</span></div>
       </div>
     </div>
   </header>
@@ -423,10 +539,10 @@
           <a class="ext" href="https://public.flourish.studio/visualisation/30193600/" target="_blank" rel="noopener">Abrir en Flourish</a>
         </div>
       </div>
-      <p class="note reveal">Ranking animado: las barras se reordenan a medida que avanza el tiempo.</p>
-      <div class="viz-body" style="min-height:640px">
+      <p class="note reveal" style="--d:50ms">Ranking animado: las barras se reordenan a medida que avanza el tiempo.</p>
+      <div class="viz-body" style="--min-h:620px; --min-h-sm:620px">
         <p class="viz-loading">Cargando visualización…</p>
-        <div class="flourish-embed flourish-bar-chart-race" data-src="visualisation/30193600"><script src="https://public.flourish.studio/resources/embed.js"></script><noscript><img src="https://public.flourish.studio/visualisation/30193600/thumbnail" width="100%" alt="bar-chart-race visualization" /></noscript></div>
+        <div class="embed flourish-embed flourish-bar-chart-race" data-src="visualisation/30193600"><script src="https://public.flourish.studio/resources/embed.js"></script><noscript><img src="https://public.flourish.studio/visualisation/30193600/thumbnail" width="100%" alt="bar-chart-race visualization" /></noscript></div>
       </div>
     </section>
 
@@ -439,10 +555,10 @@
           <a class="ext" href="https://public.tableau.com/views/Heatmaptp/Dashboard1" target="_blank" rel="noopener">Abrir en Tableau</a>
         </div>
       </div>
-      <p class="note reveal">La intensidad del color codifica el valor de cada celda de la grilla.</p>
-      <div class="viz-body" style="min-height:470px">
+      <p class="note reveal" style="--d:50ms">La intensidad del color codifica el valor de cada celda de la grilla.</p>
+      <div class="viz-body" style="--min-h:470px; --min-h-sm:751px">
         <p class="viz-loading">Cargando visualización…</p>
-        <div class='tableauPlaceholder' id='viz1789414738668' style='position: relative'><noscript><a href='#'><img alt='Dashboard 1 ' src='https:&#47;&#47;public.tableau.com&#47;static&#47;images&#47;He&#47;Heatmaptp&#47;Dashboard1&#47;1_rss.png' style='border: none' /></a></noscript><object class='tableauViz'  style='display:none;'><param name='host_url' value='https%3A%2F%2Fpublic.tableau.com%2F' /> <param name='embed_code_version' value='3' /> <param name='site_root' value='' /><param name='name' value='Heatmaptp&#47;Dashboard1' /><param name='tabs' value='no' /><param name='toolbar' value='yes' /><param name='static_image' value='https:&#47;&#47;public.tableau.com&#47;static&#47;images&#47;He&#47;Heatmaptp&#47;Dashboard1&#47;1.png' /> <param name='animate_transition' value='yes' /><param name='display_static_image' value='yes' /><param name='display_spinner' value='yes' /><param name='display_overlay' value='yes' /><param name='display_count' value='yes' /><param name='language' value='es-ES' /><param name='filter' value='publish=yes' /></object></div>                <script type='text/javascript'>                    var divElement = document.getElementById('viz1789414738668');                    var vizElement = divElement.getElementsByTagName('object')[0];                    if ( divElement.offsetWidth > 800 ) { vizElement.style.width='100%';vizElement.style.maxWidth='900px';vizElement.style.height=(divElement.offsetWidth*0.75)+'px';vizElement.style.maxHeight='427px';} else if ( divElement.offsetWidth > 500 ) { vizElement.style.width='100%';vizElement.style.maxWidth='900px';vizElement.style.height=(divElement.offsetWidth*0.75)+'px';vizElement.style.maxHeight='427px';} else { vizElement.style.width='100%';vizElement.style.height='727px';}                     var scriptElement = document.createElement('script');                    scriptElement.src = 'https://public.tableau.com/javascripts/api/viz_v1.js';                    vizElement.parentNode.insertBefore(scriptElement, vizElement);                </script>
+        <div class='embed tableauPlaceholder' id='viz1789414738668' style='position: relative'><noscript><a href='#'><img alt='Dashboard 1 ' src='https:&#47;&#47;public.tableau.com&#47;static&#47;images&#47;He&#47;Heatmaptp&#47;Dashboard1&#47;1_rss.png' style='border: none' /></a></noscript><object class='tableauViz'  style='display:none;'><param name='host_url' value='https%3A%2F%2Fpublic.tableau.com%2F' /> <param name='embed_code_version' value='3' /> <param name='site_root' value='' /><param name='name' value='Heatmaptp&#47;Dashboard1' /><param name='tabs' value='no' /><param name='toolbar' value='yes' /><param name='static_image' value='https:&#47;&#47;public.tableau.com&#47;static&#47;images&#47;He&#47;Heatmaptp&#47;Dashboard1&#47;1.png' /> <param name='animate_transition' value='yes' /><param name='display_static_image' value='yes' /><param name='display_spinner' value='yes' /><param name='display_overlay' value='yes' /><param name='display_count' value='yes' /><param name='language' value='es-ES' /><param name='filter' value='publish=yes' /></object></div>                <script type='text/javascript'>                    var divElement = document.getElementById('viz1789414738668');                    var vizElement = divElement.getElementsByTagName('object')[0];                    if ( divElement.offsetWidth > 800 ) { vizElement.style.width='100%';vizElement.style.maxWidth='900px';vizElement.style.height=(divElement.offsetWidth*0.75)+'px';vizElement.style.maxHeight='427px';} else if ( divElement.offsetWidth > 500 ) { vizElement.style.width='100%';vizElement.style.maxWidth='900px';vizElement.style.height=(divElement.offsetWidth*0.75)+'px';vizElement.style.maxHeight='427px';} else { vizElement.style.width='100%';vizElement.style.height='727px';}                     var scriptElement = document.createElement('script');                    scriptElement.src = 'https://public.tableau.com/javascripts/api/viz_v1.js';                    vizElement.parentNode.insertBefore(scriptElement, vizElement);                </script>
       </div>
     </section>
 
@@ -455,10 +571,10 @@
           <a class="ext" href="https://datawrapper.dwcdn.net/2IJhv/" target="_blank" rel="noopener">Abrir en Datawrapper</a>
         </div>
       </div>
-      <p class="note reveal">Symbol map: el tamaño de cada símbolo representa la magnitud en esa ubicación.</p>
-      <div class="viz-body" style="min-height:400px">
+      <p class="note reveal" style="--d:50ms">Symbol map: el tamaño de cada símbolo representa la magnitud en esa ubicación.</p>
+      <div class="viz-body" style="--min-h:560px; --min-h-sm:620px">
         <p class="viz-loading">Cargando visualización…</p>
-        <div style="min-height:330px" id="datawrapper-vis-2IJhv"><script type="text/javascript" defer src="https://datawrapper.dwcdn.net/2IJhv/embed.js" charset="utf-8" data-target="#datawrapper-vis-2IJhv"></script><noscript><img src="https://datawrapper.dwcdn.net/2IJhv/full.png" alt="Mapa de escuchas (Symbol map)" /></noscript></div>
+        <div class="embed" style="min-height:330px" id="datawrapper-vis-2IJhv"><script type="text/javascript" defer src="https://datawrapper.dwcdn.net/2IJhv/embed.js" charset="utf-8" data-target="#datawrapper-vis-2IJhv"></script><noscript><img src="https://datawrapper.dwcdn.net/2IJhv/full.png" alt="Mapa de escuchas (Symbol map)" /></noscript></div>
       </div>
     </section>
 
@@ -471,10 +587,10 @@
           <a class="ext" href="https://public.tableau.com/views/AIRBAGBEESWARM/Dashboard1" target="_blank" rel="noopener">Abrir en Tableau</a>
         </div>
       </div>
-      <p class="note reveal">Cada punto es un registro, separado del resto para que se vea la distribución sin superposiciones.</p>
-      <div class="viz-body" style="min-height:640px">
+      <p class="note reveal" style="--d:50ms">Cada punto es un registro, separado del resto para que se vea la distribución sin superposiciones.</p>
+      <div class="viz-body" style="--min-h:640px; --min-h-sm:751px">
         <p class="viz-loading">Cargando visualización…</p>
-        <div class='tableauPlaceholder' id='viz1789492591909' style='position: relative'><noscript><a href='#'><img alt='Dashboard 1 ' src='https:&#47;&#47;public.tableau.com&#47;static&#47;images&#47;AI&#47;AIRBAGBEESWARM&#47;Dashboard1&#47;1_rss.png' style='border: none' /></a></noscript><object class='tableauViz'  style='display:none;'><param name='host_url' value='https%3A%2F%2Fpublic.tableau.com%2F' /> <param name='embed_code_version' value='3' /> <param name='site_root' value='' /><param name='name' value='AIRBAGBEESWARM&#47;Dashboard1' /><param name='tabs' value='no' /><param name='toolbar' value='yes' /><param name='static_image' value='https:&#47;&#47;public.tableau.com&#47;static&#47;images&#47;AI&#47;AIRBAGBEESWARM&#47;Dashboard1&#47;1.png' /> <param name='animate_transition' value='yes' /><param name='display_static_image' value='yes' /><param name='display_spinner' value='yes' /><param name='display_overlay' value='yes' /><param name='display_count' value='yes' /><param name='language' value='es-ES' /><param name='filter' value='publish=yes' /></object></div>                <script type='text/javascript'>                    var divElement = document.getElementById('viz1789492591909');                    var vizElement = divElement.getElementsByTagName('object')[0];                    if ( divElement.offsetWidth > 800 ) { vizElement.style.minWidth='420px';vizElement.style.maxWidth='950px';vizElement.style.width='100%';vizElement.style.minHeight='587px';vizElement.style.maxHeight='987px';vizElement.style.height=(divElement.offsetWidth*0.75)+'px';} else if ( divElement.offsetWidth > 500 ) { vizElement.style.minWidth='420px';vizElement.style.maxWidth='950px';vizElement.style.width='100%';vizElement.style.minHeight='587px';vizElement.style.maxHeight='987px';vizElement.style.height=(divElement.offsetWidth*0.75)+'px';} else { vizElement.style.width='100%';vizElement.style.height='727px';}                     var scriptElement = document.createElement('script');                    scriptElement.src = 'https://public.tableau.com/javascripts/api/viz_v1.js';                    vizElement.parentNode.insertBefore(scriptElement, vizElement);                </script>
+        <div class='embed tableauPlaceholder' id='viz1789492591909' style='position: relative'><noscript><a href='#'><img alt='Dashboard 1 ' src='https:&#47;&#47;public.tableau.com&#47;static&#47;images&#47;AI&#47;AIRBAGBEESWARM&#47;Dashboard1&#47;1_rss.png' style='border: none' /></a></noscript><object class='tableauViz'  style='display:none;'><param name='host_url' value='https%3A%2F%2Fpublic.tableau.com%2F' /> <param name='embed_code_version' value='3' /> <param name='site_root' value='' /><param name='name' value='AIRBAGBEESWARM&#47;Dashboard1' /><param name='tabs' value='no' /><param name='toolbar' value='yes' /><param name='static_image' value='https:&#47;&#47;public.tableau.com&#47;static&#47;images&#47;AI&#47;AIRBAGBEESWARM&#47;Dashboard1&#47;1.png' /> <param name='animate_transition' value='yes' /><param name='display_static_image' value='yes' /><param name='display_spinner' value='yes' /><param name='display_overlay' value='yes' /><param name='display_count' value='yes' /><param name='language' value='es-ES' /><param name='filter' value='publish=yes' /></object></div>                <script type='text/javascript'>                    var divElement = document.getElementById('viz1789492591909');                    var vizElement = divElement.getElementsByTagName('object')[0];                    if ( divElement.offsetWidth > 800 ) { vizElement.style.minWidth='420px';vizElement.style.maxWidth='950px';vizElement.style.width='100%';vizElement.style.minHeight='587px';vizElement.style.maxHeight='987px';vizElement.style.height=(divElement.offsetWidth*0.75)+'px';} else if ( divElement.offsetWidth > 500 ) { vizElement.style.minWidth='420px';vizElement.style.maxWidth='950px';vizElement.style.width='100%';vizElement.style.minHeight='587px';vizElement.style.maxHeight='987px';vizElement.style.height=(divElement.offsetWidth*0.75)+'px';} else { vizElement.style.width='100%';vizElement.style.height='727px';}                     var scriptElement = document.createElement('script');                    scriptElement.src = 'https://public.tableau.com/javascripts/api/viz_v1.js';                    vizElement.parentNode.insertBefore(scriptElement, vizElement);                </script>
       </div>
     </section>
 
@@ -492,11 +608,12 @@
     document.documentElement.classList.add('js');
 
     var reduce = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+    var hasIO = 'IntersectionObserver' in window;
 
     /* Aparicion del texto al entrar en pantalla: da jerarquia de lectura
-       seccion por seccion. No se aplica a los contenedores de graficos. */
+       seccion por seccion. Los graficos NO se animan: son el dato. */
     var reveals = [].slice.call(document.querySelectorAll('.reveal'));
-    if (reduce || !('IntersectionObserver' in window)) {
+    if (reduce || !hasIO) {
       reveals.forEach(function (el) { el.classList.add('in'); });
     } else {
       var io = new IntersectionObserver(function (entries) {
@@ -507,14 +624,13 @@
       reveals.forEach(function (el) { io.observe(el); });
     }
 
-    /* Estado de carga real: el cartel se va cuando el embed inserta su contenido. */
+    /* Estado de carga real: el cartel se funde y el grafico entra cuando
+       la herramienta termino de montarlo. */
     [].slice.call(document.querySelectorAll('.viz-body')).forEach(function (body) {
-      var loader = body.querySelector('.viz-loading');
-      if (!loader) return;
       /* Cada herramienta monta algo distinto: Flourish y Tableau meten un
          iframe, Datawrapper monta un web component. Aceptamos cualquiera. */
       var SEL = 'iframe, datawrapper-visualization, img';
-      var done = function () { loader.hidden = true; };
+      var done = function () { body.classList.add('is-loaded'); };
       if (body.querySelector(SEL)) { done(); return; }
       if ('MutationObserver' in window) {
         var mo = new MutationObserver(function () {
@@ -526,6 +642,16 @@
         setTimeout(done, 5000);
       }
     });
+
+    /* La nav levanta una sombra cuando hay contenido pasando por debajo.
+       Con un centinela y IntersectionObserver, sin escuchar scroll. */
+    var nav = document.querySelector('.nav');
+    var sentinel = document.getElementById('nav-sentinel');
+    if (nav && sentinel && hasIO) {
+      new IntersectionObserver(function (entries) {
+        nav.classList.toggle('is-stuck', !entries[0].isIntersecting);
+      }, { threshold: 0 }).observe(sentinel);
+    }
 
     /* -------------------------------------------------------------------
        Tableau calcula el tamano una sola vez, mientras se parsea el HTML.
@@ -581,17 +707,26 @@
     /* Link activo en la navegacion segun la seccion visible. */
     var links = [].slice.call(document.querySelectorAll('.nav-links a'));
     var sections = links.map(function (a) { return document.querySelector(a.getAttribute('href')); });
-    if ('IntersectionObserver' in window) {
-      var nav = new IntersectionObserver(function (entries) {
+    if (hasIO) {
+      var navIO = new IntersectionObserver(function (entries) {
         entries.forEach(function (e) {
           if (!e.isIntersecting) return;
           var i = sections.indexOf(e.target);
           if (i < 0) return;
           links.forEach(function (a) { a.classList.remove('is-active'); });
           links[i].classList.add('is-active');
+          /* En telefono los chips scrollean: traemos el activo a la vista. */
+          var row = links[i].parentNode.parentNode;
+          if (row.scrollWidth > row.clientWidth) {
+            var chip = links[i].getBoundingClientRect();
+            var box = row.getBoundingClientRect();
+            if (chip.left < box.left || chip.right > box.right) {
+              row.scrollTo({ left: links[i].offsetLeft - 16, behavior: reduce ? 'auto' : 'smooth' });
+            }
+          }
         });
       }, { rootMargin: '-72px 0px -60% 0px', threshold: 0 });
-      sections.forEach(function (s) { if (s) nav.observe(s); });
+      sections.forEach(function (s) { if (s) navIO.observe(s); });
     }
   })();
   </script>

@@ -2,4 +2,4 @@
 
 # TP1
 
-jrilo-netizen.github.io/infovis/TPpersonal.html
+https://jrilo-netizen.github.io/infovis/TPpersonal.html

@@ -369,18 +369,26 @@
       overflow: visible !important;
     }
 
-    /* SVG estatico exportado de RawGraphs. Se inserta tal cual, sin tocarle
-       colores ni datos: solo lo encuadramos como a los demas. */
+    /* SVG exportado de RawGraphs, tal cual: no le tocamos colores ni datos.
+       Va en <object> y no en <img>: el SVG trae un <title> dentro de cada
+       area con el nombre del dispositivo, y eso solo se convierte en tooltip
+       si el navegador lo carga como documento. Dentro de un <img> el SVG es
+       una estampa muerta y esos tooltips no existen. */
     .viz-scroll{
       overflow-x: auto;
       overscroll-behavior-x: contain;   /* deslizar el grafico no dispara el "atras" */
     }
-    .viz-scroll img{
+    .viz-svg{
       display: block;
       width: 100%;
+      /* <object> no deduce el alto del contenido como si hace <img>:
+         sin esto colapsa a la altura por defecto de 150px. */
+      aspect-ratio: 805 / 600;
       height: auto;
+      border: 0;
       margin-inline: auto;
     }
+    .viz-svg img{ display: block; width: 100%; height: auto; }
     .scroll-hint{
       display: none;
       margin: 10px 0 0;
@@ -433,7 +441,7 @@
       /* A 360px de ancho las etiquetas del SVG quedarian en 4px. En vez de
          achicarlo hasta volverlo ilegible, lo dejamos a tamano util y se
          desliza: desplaza, no recorta. */
-      .viz-scroll img{ width: 700px; max-width: none; }
+      .viz-svg{ width: 700px; max-width: none; }
       .scroll-hint{ display: block; }
 
       /* El link a la herramienta pasa a ser una fila propia con altura
@@ -601,7 +609,11 @@
       <div class="viz-body" style="--min-h:820px; --min-h-sm:560px">
         <p class="viz-loading">Cargando visualización…</p>
         <div class="viz-scroll">
-          <img src="viz.svg" width="805" height="600" alt="Gráfico de áreas apiladas con las reproducciones por mes entre 2020 y 2026, separadas por dispositivo: App de Windows, Navegador (Chrome), PlayStation 4, PlayStation 5 e iPhone.">
+          <object class="viz-svg" type="image/svg+xml" data="./viz.svg"
+                  role="img" aria-label="Gráfico de áreas apiladas con las reproducciones por mes entre 2020 y 2026, separadas por dispositivo: App de Windows, Navegador (Chrome), PlayStation 4, PlayStation 5 e iPhone.">
+            <!-- Solo se muestra si el objeto no llega a cargar. -->
+            <img src="./viz.svg" alt="Gráfico de áreas apiladas con las reproducciones por mes entre 2020 y 2026, separadas por dispositivo: App de Windows, Navegador (Chrome), PlayStation 4, PlayStation 5 e iPhone.">
+          </object>
         </div>
         <p class="scroll-hint">Deslizá el gráfico para verlo completo</p>
       </div>
@@ -688,17 +700,24 @@
        la herramienta termino de montarlo. */
     [].slice.call(document.querySelectorAll('.viz-body')).forEach(function (body) {
       /* Cada herramienta monta algo distinto: Flourish y Tableau meten un
-         iframe, Datawrapper monta un web component, RawGraphs es un <img>. */
-      var SEL = 'iframe, datawrapper-visualization, img';
+         iframe, Datawrapper monta un web component, RawGraphs es un <object>.
+         El selector del <object> lleva el type a proposito: el embed de
+         Tableau tambien usa un <object>, y sin filtrar dariamos esa tarjeta
+         por cargada antes de que Tableau hubiera montado nada. */
+      var SEL = 'iframe, datawrapper-visualization, img, object[type="image/svg+xml"]';
       var done = function () { body.classList.add('is-loaded'); };
 
       var found = body.querySelector(SEL);
       if (found) {
-        /* Un <img> esta en el DOM desde el principio: hay que esperar
-           a que termine de bajar, no a que exista. */
-        if (found.tagName === 'IMG' && !found.complete) {
+        /* Un <img> o un <object> ya estan en el DOM desde el principio: hay
+           que esperar a que terminen de bajar, no a que existan. */
+        var pendingImg = found.tagName === 'IMG' && !found.complete;
+        var pendingObj = found.tagName === 'OBJECT' &&
+          !(found.contentDocument && found.contentDocument.readyState === 'complete');
+        if (pendingImg || pendingObj) {
           found.addEventListener('load', done, { once: true });
           found.addEventListener('error', done, { once: true });
+          window.addEventListener('load', done);   // red de seguridad
           setTimeout(done, 12000);
         } else {
           done();

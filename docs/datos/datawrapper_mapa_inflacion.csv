@@ -1,0 +1,19 @@
+iso3,pais,inflacion,medida
+ARG,Argentina,39.1,Deflactor del PIB
+BOL,Bolivia,19.5,IPC
+BRA,Brasil,5.0,IPC
+CHL,Chile,4.2,IPC
+COL,Colombia,5.1,IPC
+CRI,Costa Rica,-0.1,IPC
+DOM,Rep. Dominicana,3.9,IPC
+ECU,Ecuador,0.7,IPC
+GTM,Guatemala,1.5,IPC
+HND,Honduras,4.6,IPC
+MEX,México,3.8,IPC
+NIC,Nicaragua,2.1,IPC
+PAN,Panamá,-0.2,IPC
+PER,Perú,1.5,IPC
+PRY,Paraguay,4.0,IPC
+SLV,El Salvador,0.3,IPC
+URY,Uruguay,4.7,IPC
+VEN,Venezuela,227.1,Deflactor del PIB

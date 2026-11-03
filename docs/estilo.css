@@ -1,0 +1,277 @@
+/* La excepción argentina: estilos de la nota.
+   Los colores son los mismos que usan los gráficos (sección 0 del notebook). */
+
+:root {
+  color-scheme: light;
+  --papel: #fcfcfb;          /* fondo de la página y de los gráficos */
+  --papel-ticket: #ffffff;
+  --papel-metodo: #f3f2ee;
+  --tinta: #0b0b0b;
+  --tinta-2: #52514e;
+  --tinta-3: #898781;
+  --linea: #e1e0d9;
+  --azul: #2a78d6;           /* Argentina en los gráficos; también los enlaces */
+  --brasa: #c64a0f;          /* un tono de la rampa de inflación, para los antetítulos */
+
+  --titulos: "Archivo", system-ui, sans-serif;
+  --texto: "Source Serif 4", Georgia, serif;
+  --datos: "IBM Plex Mono", ui-monospace, monospace;
+  --sans: system-ui, -apple-system, "Segoe UI", sans-serif;  /* la misma de los gráficos */
+
+  --ancho-texto: 40rem;
+  --ancho-grafico: 56rem;
+}
+
+* { box-sizing: border-box; }
+
+body {
+  margin: 0;
+  background: var(--papel);
+  color: var(--tinta);
+  font: 1.125rem/1.65 var(--texto);
+}
+
+a { color: var(--azul); text-underline-offset: 0.15em; }
+:focus-visible { outline: 2px solid var(--azul); outline-offset: 3px; }
+
+code {
+  font: 0.82em var(--datos);
+  background: rgb(11 11 11 / 0.05);
+  padding: 0.1em 0.3em;
+  border-radius: 3px;
+}
+
+/* ---------- Portada: título, bajada y ticket ---------- */
+
+.portada {
+  width: min(100% - 2rem, var(--ancho-grafico));
+  margin: 0 auto;
+  padding: 4rem 0 3rem;
+  display: grid;
+  gap: 3rem;
+  align-items: center;
+}
+
+@media (min-width: 52rem) {
+  .portada { grid-template-columns: 1fr 19rem; }
+}
+
+.antetitulo,
+.periodo {
+  margin: 0 0 0.75rem;
+  font: 600 0.78rem/1.4 var(--datos);
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--brasa);
+}
+
+h1 {
+  margin: 0 0 1.5rem;
+  font: 850 clamp(3.2rem, 10vw, 6.2rem)/0.9 var(--titulos);
+  font-stretch: 65%;
+  text-transform: uppercase;
+}
+
+.bajada {
+  margin: 0 0 1.5rem;
+  font-size: 1.3rem;
+  line-height: 1.5;
+  color: var(--tinta-2);
+}
+
+.firma {
+  margin: 0;
+  font: 0.8rem/1.5 var(--datos);
+  color: var(--tinta-3);
+}
+
+/* El ticket: los números clave de la nota, como un ticket de supermercado. */
+.ticket {
+  position: relative;
+  width: 100%;
+  max-width: 21rem;
+  justify-self: center;
+  padding: 1.5rem 1.4rem 1.25rem;
+  background: var(--papel-ticket);
+  font: 0.8rem/1.5 var(--datos);
+  filter: drop-shadow(0 6px 14px rgb(11 11 11 / 0.1));
+  rotate: -1.5deg;
+}
+
+.ticket::after { /* borde dentado, como un ticket cortado */
+  content: "";
+  position: absolute;
+  inset-inline: 0;
+  top: 100%;
+  height: 10px;
+  background:
+    linear-gradient(135deg, var(--papel-ticket) 50%, transparent 50%) 0 0 / 10px 10px repeat-x,
+    linear-gradient(-135deg, var(--papel-ticket) 50%, transparent 50%) 0 0 / 10px 10px repeat-x;
+}
+
+.ticket-encabezado {
+  margin: 0 0 0.75rem;
+  padding-bottom: 0.75rem;
+  border-bottom: 1px dashed var(--tinta-3);
+  text-align: center;
+  text-transform: uppercase;
+  letter-spacing: 0.12em;
+}
+
+.ticket dl { margin: 0; }
+
+.ticket dl div { /* como en un ticket, el valor queda al final de la última línea de cada concepto */
+  display: flex;
+  align-items: flex-end;
+  gap: 0.4rem;
+  margin-bottom: 0.4rem;
+}
+
+.ticket dt { flex: 1; }
+.ticket dd { margin: 0; font-weight: 600; white-space: nowrap; }
+
+.ticket-total {
+  display: flex;
+  align-items: flex-end;
+  justify-content: space-between;
+  gap: 0.5rem;
+  margin: 0.75rem 0 0;
+  padding-top: 0.75rem;
+  border-top: 1px dashed var(--tinta-3);
+  font-size: 0.9rem;
+  font-weight: 600;
+}
+
+.ticket-total span:last-child { white-space: nowrap; }
+
+.ticket-pie {
+  margin: 0.75rem 0 0;
+  font-size: 0.7rem;
+  color: var(--tinta-2);
+}
+
+.ticket-codigo { /* código de barras decorativo */
+  height: 2rem;
+  margin-top: 0.9rem;
+  background: repeating-linear-gradient(90deg, var(--tinta) 0 2px, transparent 2px 4px, var(--tinta) 4px 5px, transparent 5px 8px);
+  opacity: 0.85;
+}
+
+/* ---------- Cuerpo de la nota ---------- */
+
+.nota {
+  width: min(100% - 2rem, var(--ancho-grafico));
+  margin: 0 auto;
+}
+
+.nota section { padding-top: 3.5rem; }
+
+/* El texto va en una columna angosta; los gráficos usan todo el ancho. */
+.nota section > :not(figure) {
+  max-width: var(--ancho-texto);
+  margin-inline: auto;
+}
+
+.nota p { margin-top: 0; margin-bottom: 1.1em; }
+
+h2 {
+  margin: 0 0 1rem;
+  font: 800 clamp(1.9rem, 5vw, 2.7rem)/1.05 var(--titulos);
+  font-stretch: 75%;
+}
+
+/* ---------- Gráficos ---------- */
+
+.grafico { margin: 2.5rem 0 3rem; }
+
+.grafico h3 {
+  margin: 0 0 0.35rem;
+  font: 700 1.3rem/1.25 var(--titulos);
+  font-stretch: 85%;
+}
+
+.bajada-grafico {
+  margin: 0 0 1rem;
+  font: 0.95rem/1.45 var(--sans);
+  color: var(--tinta-2);
+}
+
+.lienzo { width: 100%; }
+
+/* vega-embed le agrega la clase .vega-embed al contenedor: lo ordenamos en columna
+   para que el menú "Comparar con" quede arriba del gráfico. (El selector es más específico
+   que el CSS que inyecta vega-embed, que si no lo vuelve a poner en display: block.) */
+.grafico .lienzo.vega-embed { display: flex; flex-direction: column; }
+
+.vega-bindings {
+  order: -1;
+  margin-bottom: 0.75rem;
+  font: 0.9rem var(--sans);
+  color: var(--tinta-2);
+}
+
+.vega-bindings select {
+  font: inherit;
+  color: var(--tinta);
+  padding: 0.3rem 0.5rem;
+  border: 1px solid var(--linea);
+  border-radius: 6px;
+  background: var(--papel-ticket);
+}
+
+.grafico figcaption {
+  margin-top: 0.75rem;
+  font: 0.72rem/1.5 var(--datos);
+  color: var(--tinta-3);
+}
+
+.grafico figcaption a { color: inherit; }
+
+/* Recuadro que ocupa el lugar de un gráfico de Flourish o Datawrapper hasta que se pegue su código. */
+.pendiente {
+  padding: 2.5rem 1.5rem;
+  border: 1.5px dashed var(--tinta-3);
+  border-radius: 8px;
+  text-align: center;
+  font: 0.85rem/1.6 var(--datos);
+  color: var(--tinta-2);
+}
+
+.pendiente p { margin: 0; }
+
+/* Tooltip de los gráficos (lo crea vega-embed). */
+body #vg-tooltip-element {
+  font-family: var(--sans);
+  font-size: 13px;
+  border-radius: 6px;
+}
+
+body #vg-tooltip-element td.key { color: var(--tinta-3); }
+
+/* ---------- Metodología y pie ---------- */
+
+.metodo {
+  margin-top: 4rem;
+  padding: 3rem 0;
+  background: var(--papel-metodo);
+  border-top: 1px solid var(--linea);
+}
+
+.metodo-contenido {
+  width: min(100% - 2rem, var(--ancho-texto));
+  margin: 0 auto;
+  font-size: 1rem;
+}
+
+.metodo-contenido ul { padding-left: 1.2rem; margin: 0 0 1.1em; }
+.metodo-contenido li { margin-bottom: 0.3em; }
+
+.enlaces { font: 0.85rem/1.6 var(--datos); }
+
+.pie {
+  width: min(100% - 2rem, var(--ancho-texto));
+  margin: 0 auto;
+  padding: 2rem 0 3rem;
+  font: 0.72rem/1.5 var(--datos);
+  color: var(--tinta-3);
+}

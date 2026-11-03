@@ -1,0 +1,147 @@
+<!doctype html>
+<html lang="es">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="color-scheme" content="light">
+  <title>La excepción argentina</title>
+  <meta name="description" content="América Latina dejó atrás la inflación alta. Argentina no, y su economía produce por habitante menos que en 2011. Una nota con datos de la API Data360 del Banco Mundial.">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Archivo:wdth,wght@62..125,400..900&family=IBM+Plex+Mono:wght@400;600&family=Source+Serif+4:opsz,wght@8..60,400;8..60,600&display=swap">
+  <link rel="stylesheet" href="estilo.css">
+  <script src="https://cdn.jsdelivr.net/npm/vega@6.4.0"></script>
+  <script src="https://cdn.jsdelivr.net/npm/vega-lite@6.4.1"></script>
+  <script src="https://cdn.jsdelivr.net/npm/vega-embed@7.3.0"></script>
+</head>
+<body>
+  <header class="portada">
+    <div>
+      <p class="antetitulo">Datos · América Latina, 1960–2025</p>
+      <h1>La excepción argentina</h1>
+      <p class="bajada">En 1990, casi toda América Latina vivía con inflación de dos dígitos o más. Hoy, 15 de los 18 países de la región la tienen por debajo del 10% anual. Argentina sigue afuera de ese grupo, y su economía produce por habitante menos que en 2011.</p>
+      <p class="firma">Por Nombre Apellido, Nombre Apellido y Nombre Apellido · Noviembre de 2026</p>
+    </div>
+
+    <aside class="ticket" aria-label="La nota en cinco números">
+      <p class="ticket-encabezado">Resumen de cuenta<br>Argentina</p>
+      <dl>
+        <div><dt>Años con inflación de un dígito, 1961-2025</dt><dd>11 de 65</dd></div>
+        <div><dt>Inflación de 2024</dt><dd>219,9%</dd></div>
+        <div><dt>PIB por habitante, 2025 vs. 2011</dt><dd>−5,4%</dd></div>
+        <div><dt>Puesto en PIB por habitante, 1960 → 2025</dt><dd>1.° → 5.°</dd></div>
+      </dl>
+      <p class="ticket-total"><span>Puesto mundial en inflación crónica*</span><span>3.° de 7</span></p>
+      <p class="ticket-pie">* Países con inflación mediana de 20% o más entre 2011 y 2025.<br>Fuente: Banco Mundial, Data360.</p>
+      <div class="ticket-codigo" aria-hidden="true"></div>
+    </aside>
+  </header>
+
+  <main>
+    <article class="nota">
+      <section>
+        <p class="periodo">Inflación · 1961–2025</p>
+        <h2>Cuatro décadas para bajar la inflación</h2>
+        <p>En 1990, América Latina era sinónimo de inflación. De los 18 países que analizamos, solo Panamá tenía precios que subían menos de 10% por año, y cinco superaban el 100%: Argentina, Brasil, Nicaragua, Perú y Uruguay. La mediana regional era de 39%.</p>
+        <p>Treinta y cinco años después, el panorama es otro. La mayoría de los países bajó la inflación a un dígito entre mediados de los 90 y principios de los 2000, y no volvió atrás. En 2025, 15 de los 18 estuvieron por debajo del 10% y la mediana regional fue de 4%.</p>
+        <figure class="grafico" data-grafico="inflacion">
+          <h3></h3>
+          <p class="bajada-grafico"></p>
+          <div class="lienzo"></div>
+          <figcaption>Fuente: Banco Mundial, Data360 (World Development Indicators). <a href="datos/inflacion.csv" download>Descargar los datos (CSV)</a></figcaption>
+        </figure>
+        <p>Argentina es la excepción. Desde 1961 tuvo inflación de un dígito en solo 11 años: 1969, 1970 y los nueve de la convertibilidad, de 1993 a 2001. En 2024 llegó a 219,9%, la más alta de la región y la mayor del país desde 1990.</p>
+      </section>
+
+      <section>
+        <p class="periodo">PIB por habitante · 1960–2025</p>
+        <h2>Del primero al quinto puesto</h2>
+        <p>En 1960, Argentina tenía el PIB por habitante más alto de América Latina: 7.397 dólares de 2015, 2,3 veces el de Chile. Durante medio siglo creció a los tirones, con crisis cada pocos años, y llegó a su máximo en 2011, con 14.041 dólares.</p>
+        <p>Desde entonces no volvió a alcanzarlo: en 2025 fue de 13.287 dólares, un 5,4% menos. Hoy cuatro países de la región la superan, y ninguno volvió a quedar detrás desde que la pasó: Uruguay en 2009, Panamá en 2014, Chile en 2018 y Costa Rica en 2019.</p>
+        <figure class="grafico" data-grafico="pib">
+          <h3></h3>
+          <p class="bajada-grafico"></p>
+          <div class="lienzo"></div>
+          <figcaption>Fuente: Banco Mundial, Data360 (World Development Indicators). <a href="datos/pib.csv" download>Descargar los datos (CSV)</a></figcaption>
+        </figure>
+        <p>El ranking año por año muestra el recorrido completo:</p>
+        <figure class="grafico">
+          <!-- FLOURISH: bar chart race publicado (https://public.flourish.studio/visualisation/30791854/) -->
+          <div class="flourish-embed flourish-bar-chart-race" data-src="visualisation/30791854"><script src="https://public.flourish.studio/resources/embed.js"></script><noscript><img src="https://public.flourish.studio/visualisation/30791854/thumbnail" width="100%" alt="Ranking del PIB por habitante en América Latina, 1960-2025"></noscript></div>
+          <figcaption>Fuente: Banco Mundial, Data360 (World Development Indicators). <a href="datos/flourish_ranking_pib.csv" download>Descargar los datos (CSV)</a></figcaption>
+        </figure>
+      </section>
+
+      <section>
+        <p class="periodo">Inflación y crecimiento · 2011–2025</p>
+        <h2>Inflación alta, economía quieta</h2>
+        <p>¿Son dos historias o una? Al cruzar las dos variables para los últimos quince años, Argentina y Venezuela quedan solas en un rincón. Son los únicos países de la región con una inflación mediana de dos dígitos o más, y los únicos que hoy producen menos por habitante que en 2011.</p>
+        <figure class="grafico" data-grafico="inflacion_vs_pib">
+          <h3></h3>
+          <p class="bajada-grafico"></p>
+          <div class="lienzo"></div>
+          <figcaption>Fuente: Banco Mundial, Data360 (World Development Indicators). <a href="datos/inflacion_vs_pib.csv" download>Descargar los datos (CSV)</a></figcaption>
+        </figure>
+        <p>El resto de la región, con inflaciones medianas de entre menos de 1% (Panamá) y 8% (Uruguay), creció entre 7% (México y Brasil) y 61% (República Dominicana).</p>
+        <p>La comparación no demuestra que una cosa cause la otra: la inflación persistente suele ser síntoma de desequilibrios macroeconómicos que también frenan la inversión y el crecimiento. Pero la compañía en la que queda Argentina dice mucho. Entre 2011 y 2025, solo siete países del mundo tuvieron una inflación mediana de 20% o más. Argentina es el tercero, detrás de Venezuela y Sudán del Sur, y por delante de Siria, Sudán, Irán y Malawi.</p>
+      </section>
+
+      <section>
+        <p class="periodo">Inflación · 2025</p>
+        <h2>¿El final de la excepción?</h2>
+        <p>En 2025 la inflación argentina bajó a 39,1%, su nivel más bajo desde 2018. El dato sale del deflactor del PIB, porque el WDI todavía no tiene el IPC argentino de ese año. La baja es fuerte, pero el mapa de la región muestra la distancia que falta. Solo tres países superaron el 10%: Venezuela, Argentina y Bolivia. La mitad de la región tuvo 4% o menos.</p>
+        <figure class="grafico">
+          <!-- DATAWRAPPER: mapa publicado (https://datawrapper.dwcdn.net/KllOm/1/). El script ajusta la altura del iframe. -->
+          <iframe title="En 2025, solo tres países de la región superaron el 10% de inflación" aria-label="Mapa coroplético" id="datawrapper-chart-KllOm" src="https://datawrapper.dwcdn.net/KllOm/1/" scrolling="no" frameborder="0" style="width: 0; min-width: 100% !important; border: none;" height="800" data-external="1"></iframe><script type="text/javascript">(function(){function e(){window.addEventListener(`message`,function(e){if(e.data[`datawrapper-height`]!==void 0){var t=document.querySelectorAll(`iframe`);for(var n in e.data[`datawrapper-height`])for(var r=0,i;i=t[r];r++)if(i.contentWindow===e.source){var a=e.data[`datawrapper-height`][n]+`px`;i.style.height=a}}})}e()})();</script>
+          <figcaption>Fuente: Banco Mundial, Data360 (World Development Indicators). <a href="datos/datawrapper_mapa_inflacion.csv" download>Descargar los datos (CSV)</a></figcaption>
+        </figure>
+        <p>Para llegar al nivel típico de sus vecinos, la inflación argentina tendría que ser unas diez veces menor que la de 2025. La región muestra que es posible: casi todos sus países lo lograron hace más de veinte años y lo sostuvieron desde entonces.</p>
+      </section>
+    </article>
+
+    <section class="metodo" aria-labelledby="titulo-metodo">
+      <div class="metodo-contenido">
+        <p class="periodo">Metodología</p>
+        <h2 id="titulo-metodo">Cómo hicimos esta nota</h2>
+        <p><strong>Los datos.</strong> Todos los datos salen de la <a href="https://data360.worldbank.org/en/api">API Data360 del Banco Mundial</a>, de la base World Development Indicators (WDI). Usamos tres indicadores de 1960 a 2025 para 18 países de América Latina:</p>
+        <ul>
+          <li>Inflación de precios al consumidor (<code>WB_WDI_FP_CPI_TOTL_ZG</code>).</li>
+          <li>Inflación según el deflactor del PIB (<code>WB_WDI_NY_GDP_DEFL_KD_ZG</code>).</li>
+          <li>PIB por habitante en dólares constantes de 2015 (<code>WB_WDI_NY_GDP_PCAP_KD</code>).</li>
+        </ul>
+        <p><strong>La exploración de la API.</strong> Antes de elegir el tema recorrimos el catálogo de Data360: 174 bases de 52 organizaciones, con casi 10.000 indicadores. Los datos siguen el estándar SDMX: cada fila es una observación de un indicador para un país y un año, a veces desagregada por sexo, edad o zona. El recorrido completo está en la sección 1 del notebook.</p>
+        <p><strong>Las decisiones.</strong></p>
+        <ul>
+          <li>Medimos la inflación con el IPC.</li>
+          <li>Donde el IPC falta, usamos el deflactor del PIB: Argentina antes de 2018 y en 2025, y Venezuela desde 2017. En los años con ambas medidas, la diferencia mediana entre las dos es de 1,9 puntos.</li>
+          <li>Descartamos el PIB de Honduras anterior a 2000, porque la serie tiene un quiebre.</li>
+          <li>Para resumir la inflación de un período usamos la mediana, que no se dispara por un solo año de hiperinflación.</li>
+        </ul>
+        <p><strong>Las herramientas.</strong> El análisis y los tres gráficos principales se hicieron en Python, con pandas y Altair, y se insertan en esta página con vega-embed. El ranking animado se hizo con Flourish, y el mapa, con Datawrapper.</p>
+        <!-- Reemplazar USUARIO/REPO por el usuario y el repositorio de GitHub -->
+        <p class="enlaces"><a href="https://github.com/USUARIO/REPO/blob/main/tp_data360.ipynb">Ver el notebook</a> · <a href="https://colab.research.google.com/github/USUARIO/REPO/blob/main/tp_data360.ipynb">Abrir en Colab</a> · <a href="https://github.com/USUARIO/REPO">Ver el repositorio</a></p>
+      </div>
+    </section>
+  </main>
+
+  <footer class="pie">
+    <p>Trabajo práctico de Visualización de la Información · ITBA · 2026. Datos: Banco Mundial, Data360 (licencia CC BY 4.0).</p>
+  </footer>
+
+  <script>
+    // Cada <figure data-grafico="nombre"> recibe el gráfico que exportó el notebook (graficos/nombre.json).
+    // El título y la bajada vienen dentro del JSON: los pasamos a HTML para que se ajusten al ancho
+    // de la pantalla y le dejen todo el espacio al gráfico.
+    for (const figura of document.querySelectorAll("[data-grafico]")) {
+      fetch(`graficos/${figura.dataset.grafico}.json`)
+        .then((respuesta) => respuesta.json())
+        .then((spec) => {
+          figura.querySelector("h3").textContent = spec.title.text;
+          figura.querySelector(".bajada-grafico").textContent = [spec.title.subtitle].flat().join(" ");
+          delete spec.title;
+          return vegaEmbed(figura.querySelector(".lienzo"), spec, { actions: false });
+        });
+    }
+  </script>
+</body>
+</html>

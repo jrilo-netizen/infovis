@@ -578,28 +578,37 @@ body #vg-tooltip-element td.key { color: var(--tinta-3); }
 
 .pie strong { color: var(--tinta); font-weight: 600; }
 
-/* ---------- Animación de entrada ----------
-   app.js agrega la clase .visible la primera vez que cada bloque entra en pantalla.
-   La clase .js la pone el <head>, así que sin JavaScript todo se ve desde el principio. */
+/* ---------- Animaciones de entrada ----------
+   Son solo CSS: si JavaScript falla o tarda en cargar, el contenido se ve igual. */
 
-.js .revelar {
-  opacity: 0;
-  transform: translateY(14px);
-  transition: opacity 500ms var(--ease-out), transform 500ms var(--ease-out);
+@keyframes aparecer { from { opacity: 0; transform: translateY(14px); } }
+
+@media (prefers-reduced-motion: no-preference) {
+  /* La portada aparece al cargar la página, en cascada. */
+  .portada-texto > *, .ticket { animation: aparecer 600ms var(--ease-out) both; }
+  .portada-texto > :nth-child(2) { animation-delay: 60ms; }
+  .portada-texto > :nth-child(3) { animation-delay: 120ms; }
+  .portada-texto > :nth-child(4) { animation-delay: 180ms; }
+  .ticket { animation-delay: 240ms; }
+
+  /* Cada bloque .revelar aparece al entrar en pantalla: la animación avanza con el desplazamiento
+     y termina cuando el bloque subió 120px. Sin soporte del navegador, se ve sin animación. */
+  @supports (animation-timeline: view()) {
+    .revelar {
+      animation: aparecer var(--ease-out) both;
+      animation-timeline: view();
+      animation-range: entry 0% entry 120px;
+    }
+  }
 }
 
-.js .revelar.visible { opacity: 1; transform: none; }
-
 @media (prefers-reduced-motion: reduce) {
-  .js .revelar { transform: none; transition: opacity 200ms ease; }
   .pestanas-indicador { transition: none; }
 }
 
 @media print {
-  .js .revelar { opacity: 1; transform: none; }
   .pestanas, .barra-enlaces { display: none; }
 }
-
 /* ---------- Pantallas chicas ---------- */
 
 @media (max-width: 64rem) {

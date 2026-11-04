@@ -80,14 +80,4 @@ const repo = enGitHub ? `${location.hostname.split(".")[0]}/${location.pathname.
 document.querySelectorAll("a[data-repo]").forEach((enlace) => (enlace.href = `https://github.com/${repo}/${enlace.dataset.repo}`));
 document.querySelectorAll("a[data-colab]").forEach((enlace) => (enlace.href = `https://colab.research.google.com/github/${repo}/blob/main/tp_data360.ipynb`));
 
-// ---------- Animación de entrada ----------
-// Cada bloque .revelar aparece la primera vez que entra en pantalla; los que entran juntos, escalonados.
-const observador = new IntersectionObserver((entradas) => {
-  entradas.filter((entrada) => entrada.isIntersecting).forEach((entrada, orden) => {
-    entrada.target.style.transitionDelay = `${orden * 60}ms`;
-    entrada.target.classList.add("visible");
-    observador.unobserve(entrada.target);
-  });
-}, { rootMargin: "0px 0px -8% 0px" });
 
-document.querySelectorAll(".revelar").forEach((elemento) => observador.observe(elemento));

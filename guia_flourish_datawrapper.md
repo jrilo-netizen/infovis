@@ -1,8 +1,8 @@
 # Guía: los gráficos de Flourish y Datawrapper
 
-La nota (`docs/index.html`) suma dos gráficos hechos con herramientas vistas en la materia. Sus datos ya están listos en `docs/datos/`: los genera la sección 3 del notebook.
+La nota (`docs/bancomundial.html`) suma dos gráficos hechos con herramientas vistas en la materia. Sus datos ya están listos en `docs/datos/`: los genera la sección 3 del notebook.
 
-Cada gráfico se arma con la cuenta de algún integrante, se publica y se pega su código de inserción en `docs/index.html`, en el recuadro marcado. Para que la nota se vea como una sola pieza, usamos los mismos colores y la misma fuente que los gráficos de Altair.
+Cada gráfico se arma con la cuenta de algún integrante, se publica y se inserta en `docs/bancomundial.html` como un iframe. Los dos ya están publicados e insertados. Para que la nota se vea como una sola pieza, usamos los mismos colores y la misma fuente que los gráficos de Altair.
 
 ## 1. Ranking del PIB per cápita (Flourish, bar chart race)
 
@@ -21,8 +21,8 @@ Cada gráfico se arma con la cuenta de algún integrante, se publica y se pega s
      - Título: *De primero a quinto: el ranking del PIB por habitante en América Latina*
      - Subtítulo: *Dólares constantes de 2015, 1960-2025*
    - **Footer:** fuente *Banco Mundial, Data360 (World Development Indicators)*.
-4. Publicar con **Export & publish** → **Publish to share and embed** y copiar el código de inserción. Empieza con `<div class="flourish-embed`.
-5. En `docs/index.html`, buscar el comentario `FLOURISH` y reemplazar el `<div class="pendiente">` que le sigue por ese código.
+4. Publicar con **Export & publish** → **Publish to share and embed** y anotar el número de la visualización.
+5. En `docs/bancomundial.html`, buscar el comentario `Flourish` y poner en el `data-src` del iframe que le sigue la dirección `https://flo.uri.sh/visualisation/NÚMERO/embed`.
 
 ## 2. Mapa de la inflación 2025 (Datawrapper, choropleth map)
 
@@ -43,7 +43,7 @@ Cada gráfico se arma con la cuenta de algún integrante, se publica y se pega s
      - Título: *En 2025, solo tres países de la región superaron el 10% de inflación*
      - Descripción: *Inflación anual. IPC; en Argentina y Venezuela, deflactor del PIB.*
      - Fuente: *Banco Mundial, Data360 (World Development Indicators)*
-4. Publicar con **Publish & Embed** → **Publish now** y copiar el código de inserción (**Responsive iframe**).
-5. En `docs/index.html`, buscar el comentario `DATAWRAPPER` y reemplazar el `<div class="pendiente">` que le sigue por ese código.
+4. Publicar con **Publish & Embed** → **Publish now** y anotar la dirección publicada, del tipo `https://datawrapper.dwcdn.net/CÓDIGO/1/`.
+5. En `docs/bancomundial.html`, buscar el comentario `Datawrapper` y, en el iframe que le sigue, poner esa dirección en `data-src` y `datawrapper-chart-CÓDIGO` en `id`. Con ese `id`, `docs/app.js` le ajusta la altura al mapa.
 
 > Si se vuelve a ejecutar el notebook y cambian los datos, hay que subir de nuevo los CSV y volver a publicar los dos gráficos.

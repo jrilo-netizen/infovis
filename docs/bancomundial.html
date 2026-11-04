@@ -1,0 +1,368 @@
+<!doctype html>
+<html lang="es">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="color-scheme" content="light">
+  <title>La excepción argentina</title>
+  <meta name="description" content="Trabajo práctico de Visualización de la Información: exploración de la API Data360 del Banco Mundial, tres visualizaciones interactivas y una nota sobre inflación y crecimiento en América Latina.">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Geist:wght@400..700&family=Geist+Mono:wght@400..600&display=swap">
+  <link rel="stylesheet" href="estilo.css">
+  <script src="https://cdn.jsdelivr.net/npm/vega@6.4.0" defer></script>
+  <script src="https://cdn.jsdelivr.net/npm/vega-lite@6.4.1" defer></script>
+  <script src="https://cdn.jsdelivr.net/npm/vega-embed@7.3.0" defer></script>
+  <script src="app.js" defer></script>
+</head>
+<body>
+  <header class="barra">
+    <div class="contenedor barra-contenido">
+      <p class="barra-curso">Visualización de la Información · ITBA 2026</p>
+      <nav class="barra-enlaces" aria-label="Recursos">
+        <a href="https://github.com/USUARIO/REPO/blob/main/tp_data360.ipynb" data-repo="blob/main/tp_data360.ipynb">Notebook</a>
+        <a href="https://github.com/USUARIO/REPO" data-repo="">Repositorio</a>
+      </nav>
+    </div>
+  </header>
+
+  <section class="portada contenedor">
+    <div class="portada-texto">
+      <p class="portada-antetitulo">Trabajo práctico con la API Data360 del Banco Mundial</p>
+      <h1>La excepción argentina</h1>
+      <p class="portada-bajada">Exploramos la API Data360 para entender por qué Argentina no logró bajar la inflación como el resto de la región.</p>
+      <div class="portada-acciones">
+        <a class="boton boton-principal" href="#historia">Leer la historia</a>
+        <a class="boton boton-secundario" href="https://github.com/USUARIO/REPO/blob/main/tp_data360.ipynb" data-repo="blob/main/tp_data360.ipynb">Ver el notebook</a>
+      </div>
+    </div>
+
+    <aside class="ticket" aria-label="La historia en cinco números">
+      <p class="ticket-encabezado">Resumen de cuenta<br>Argentina</p>
+      <dl>
+        <div><dt>Años con inflación de un dígito, 1961-2025</dt><dd>11 de 65</dd></div>
+        <div><dt>Inflación de 2024</dt><dd>219,9%</dd></div>
+        <div><dt>PIB por habitante, 2025 vs. 2011</dt><dd>−5,4%</dd></div>
+        <div><dt>Puesto regional en PIB por habitante, 1960 → 2025</dt><dd>1.° → 5.°</dd></div>
+      </dl>
+      <p class="ticket-total"><span>Puesto mundial en inflación crónica*</span><span>3.° de 7</span></p>
+      <p class="ticket-pie">* Países con inflación mediana de 20% o más entre 2011 y 2025.<br>Fuente: Banco Mundial, Data360.</p>
+      <div class="ticket-codigo" aria-hidden="true"></div>
+    </aside>
+  </section>
+
+  <nav class="pestanas" aria-label="Puntos del trabajo práctico">
+    <div class="contenedor">
+      <div class="pestanas-lista" role="tablist">
+        <button class="pestana" type="button" role="tab" id="tab-exploracion" aria-controls="exploracion" aria-selected="true">
+          <span class="pestana-punto">Punto 1</span>
+          <span class="pestana-titulo">Exploración</span>
+          <span class="pestana-detalle">Bases, indicadores y estructura</span>
+        </button>
+        <button class="pestana" type="button" role="tab" id="tab-visualizaciones" aria-controls="visualizaciones" aria-selected="false" tabindex="-1">
+          <span class="pestana-punto">Punto 2</span>
+          <span class="pestana-titulo">Visualizaciones</span>
+          <span class="pestana-detalle">Tres gráficos interactivos en Altair</span>
+        </button>
+        <button class="pestana" type="button" role="tab" id="tab-historia" aria-controls="historia" aria-selected="false" tabindex="-1">
+          <span class="pestana-punto">Punto 3</span>
+          <span class="pestana-titulo">Storytelling</span>
+          <span class="pestana-detalle">La nota, con Flourish y Datawrapper</span>
+        </button>
+        <span class="pestanas-indicador" aria-hidden="true"></span>
+      </div>
+    </div>
+  </nav>
+
+  <main id="contenido" class="contenedor">
+
+    <!-- ============ PUNTO 1: EXPLORACIÓN DE LA API ============ -->
+    <section class="panel" id="exploracion" role="tabpanel" aria-labelledby="tab-exploracion" tabindex="0">
+      <aside class="panel-guia revelar">
+        <h2>Exploración de la API</h2>
+        <div class="consigna">
+          <p class="consigna-etiqueta">Consigna</p>
+          <p>Explorar la API de datos del Banco Mundial para identificar qué bases de datos existen, qué indicadores tiene cada una y cómo se estructuran.</p>
+        </div>
+        <p class="panel-resumen">Recorrimos el catálogo de Data360 desde Python con los endpoints de la API. Todo el código está en la sección 1 del notebook.</p>
+        <a class="enlace-externo" href="https://github.com/USUARIO/REPO/blob/main/tp_data360.ipynb" data-repo="blob/main/tp_data360.ipynb">Ver el notebook</a>
+      </aside>
+
+      <div class="panel-contenido">
+        <div class="bloque revelar">
+          <h3>Un catálogo de casi 10.000 indicadores</h3>
+          <p>El buscador de la API indexa cada base como un documento con su ficha. Contándolas obtuvimos el tamaño del catálogo:</p>
+          <dl class="cifras">
+            <div><dt>Bases de datos</dt><dd>174</dd></div>
+            <div><dt>Organizaciones</dt><dd>52</dd></div>
+            <div><dt>Indicadores</dt><dd>9.985</dd></div>
+            <div><dt>Países</dt><dd>220</dd></div>
+          </dl>
+        </div>
+
+        <div class="bloque revelar">
+          <h3>Cómo se consulta</h3>
+          <p>La API tiene cinco endpoints documentados. Sumamos uno del portal que agrupa los países por región.</p>
+          <div class="endpoints">
+            <div class="endpoints-grupo endpoints-grupo-alto">
+              <p class="endpoints-titulo">Catálogo</p>
+              <ul>
+                <li><code class="metodo">POST</code><code>/searchv2</code><span>Lista bases e indicadores y busca por palabra clave</span></li>
+                <li><code class="metodo">GET</code><code>/indicators</code><span>Códigos de los indicadores de una base</span></li>
+                <li><code class="metodo">POST</code><code>/metadata</code><span>Ficha de un indicador: definición, unidad y fuente</span></li>
+              </ul>
+            </div>
+            <div class="endpoints-grupo">
+              <p class="endpoints-titulo">Datos</p>
+              <ul>
+                <li><code class="metodo">GET</code><code>/data</code><span>Las observaciones, de a 1.000 filas</span></li>
+                <li><code class="metodo">GET</code><code>/disaggregation</code><span>Desagregaciones posibles de un indicador</span></li>
+              </ul>
+            </div>
+            <div class="endpoints-grupo">
+              <p class="endpoints-titulo">Portal, sin documentar</p>
+              <ul>
+                <li><code class="metodo">GET</code><code>/portal/v1/hierarchy</code><span>Agrupa los países por región y nivel de ingreso</span></li>
+              </ul>
+            </div>
+          </div>
+        </div>
+
+        <div class="bloque revelar">
+          <h3>Quién produce los datos</h3>
+          <p>El código de cada base empieza con la sigla de la organización que la produce. El Banco Mundial y el FMI concentran el 82% de los indicadores.</p>
+          <!-- --p: indicadores de la organización / indicadores del Banco Mundial (el máximo) -->
+          <ul class="barras" aria-label="Indicadores por organización">
+            <li><span class="barras-nombre">Banco Mundial</span><span class="barras-fila"><span class="barras-barra" style="--p: 1"></span>5.283</span></li>
+            <li><span class="barras-nombre">FMI</span><span class="barras-fila"><span class="barras-barra" style="--p: 0.557"></span>2.942</span></li>
+            <li><span class="barras-nombre">Foro Económico Mundial</span><span class="barras-fila"><span class="barras-barra" style="--p: 0.089"></span>472</span></li>
+            <li><span class="barras-nombre">Fundación Bertelsmann</span><span class="barras-fila"><span class="barras-barra" style="--p: 0.051"></span>269</span></li>
+            <li><span class="barras-nombre">OCDE</span><span class="barras-fila"><span class="barras-barra" style="--p: 0.028"></span>147</span></li>
+            <li><span class="barras-nombre">FAO</span><span class="barras-fila"><span class="barras-barra" style="--p: 0.027"></span>143</span></li>
+            <li><span class="barras-nombre">Global Integrity</span><span class="barras-fila"><span class="barras-barra" style="--p: 0.022"></span>114</span></li>
+            <li><span class="barras-nombre">V-Dem</span><span class="barras-fila"><span class="barras-barra" style="--p: 0.016"></span>84</span></li>
+          </ul>
+          <p class="nota-al-pie">Las bases se clasifican en cinco temas: Prosperidad (70), Infraestructura (33), Planeta (32), Personas (17) y Digital (15). Otras 44 no tienen tema asignado.</p>
+        </div>
+
+        <div class="bloque revelar">
+          <h3>Cómo se estructura un dato</h3>
+          <p>Los datos siguen el estándar SDMX: cada fila es una sola observación. Esta es la población de Argentina en 2024, tal como la devuelve <code>/data</code>:</p>
+          <div class="anatomia">
+            <div class="anatomia-campo anatomia-ancho">
+              <p class="anatomia-titulo">Qué se mide</p>
+              <p><code>DATABASE_ID</code> WB_WDI</p>
+              <p><code>INDICATOR</code> WB_WDI_SP_POP_TOTL</p>
+              <p><code>UNIT_MEASURE</code> PS (personas)</p>
+            </div>
+            <div class="anatomia-campo">
+              <p class="anatomia-titulo">Dónde</p>
+              <p><code>REF_AREA</code> ARG</p>
+              <p class="anatomia-nota">País o agregado regional</p>
+            </div>
+            <div class="anatomia-campo">
+              <p class="anatomia-titulo">Cuándo</p>
+              <p><code>TIME_PERIOD</code> 2024</p>
+              <p><code>FREQ</code> A (anual)</p>
+            </div>
+            <div class="anatomia-campo">
+              <p class="anatomia-titulo">Desagregaciones</p>
+              <p><code>SEX</code> _T <code>AGE</code> _T <code>URBANISATION</code> _T</p>
+              <p class="anatomia-nota"><code>_T</code> es total y <code>_Z</code>, que no aplica</p>
+            </div>
+            <div class="anatomia-campo anatomia-valor">
+              <p class="anatomia-titulo">El valor</p>
+              <p><code>OBS_VALUE</code> "45696159"</p>
+              <p class="anatomia-nota">Llega como texto</p>
+            </div>
+          </div>
+          <p>Otras bases sí desagregan. Así devuelve la base de Estadísticas de Género el desempleo de Argentina en 2023, por sexo y edad:</p>
+          <table class="tabla">
+            <caption>Desempleo de Argentina en 2023, en % (indicador WB_GS_SL_UEM_ZS)</caption>
+            <thead><tr><th scope="col">Edad</th><th scope="col">Mujeres</th><th scope="col">Varones</th><th scope="col">Total</th></tr></thead>
+            <tbody>
+              <tr><th scope="row">15 a 24 años</th><td>20,1</td><td>17,9</td><td>18,8</td></tr>
+              <tr><th scope="row">15 años o más</th><td>7,6</td><td>6,3</td><td>6,8</td></tr>
+            </tbody>
+          </table>
+        </div>
+
+        <div class="bloque revelar">
+          <h3>Lo que aprendimos</h3>
+          <div class="hallazgos">
+            <div><p class="hallazgos-titulo">1.000 filas por consulta</p><p>Para bajar una serie completa hay que paginar con <code>skip</code>.</p></div>
+            <div><p class="hallazgos-titulo">El período va de a dos</p><p><code>timePeriodFrom</code> solo filtra junto con <code>timePeriodTo</code>. Con uno solo, llega la serie entera.</p></div>
+            <div><p class="hallazgos-titulo">Varios países por consulta</p><p><code>REF_AREA</code> acepta códigos separados por coma.</p></div>
+            <div><p class="hallazgos-titulo">Los valores son texto</p><p><code>OBS_VALUE</code> hay que convertirlo a número antes de graficar.</p></div>
+            <div><p class="hallazgos-titulo">Países y regiones mezclados</p><p>La jerarquía del portal indica qué códigos son países.</p></div>
+            <div><p class="hallazgos-titulo">Metadatos incompletos</p><p>22 bases no dicen quién las produce, y los conteos no siempre coinciden.</p></div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ============ PUNTO 2: VISUALIZACIONES ============ -->
+    <section class="panel" id="visualizaciones" role="tabpanel" aria-labelledby="tab-visualizaciones" tabindex="0" hidden>
+      <aside class="panel-guia revelar">
+        <h2>Visualizaciones</h2>
+        <div class="consigna">
+          <p class="consigna-etiqueta">Consigna</p>
+          <p>Desarrollar hasta tres visualizaciones, preferentemente interactivas, sobre un tema relevante y aptas para una nota periodística.</p>
+        </div>
+        <p class="panel-resumen">Tres gráficos interactivos hechos con Altair en Python y exportados como Vega-Lite. El desarrollo está en la sección 2 del notebook.</p>
+        <a class="enlace-externo" href="https://github.com/USUARIO/REPO/blob/main/tp_data360.ipynb" data-repo="blob/main/tp_data360.ipynb">Ver el notebook</a>
+      </aside>
+
+      <div class="panel-contenido">
+        <div class="bloque revelar">
+          <h3>Los datos</h3>
+          <p>Tres indicadores de los World Development Indicators para 18 países de América Latina, de 1960 a 2025:</p>
+          <dl class="datos">
+            <div><dt>Inflación, precios al consumidor</dt><dd><code>WB_WDI_FP_CPI_TOTL_ZG</code></dd></div>
+            <div><dt>Inflación, deflactor del PIB</dt><dd><code>WB_WDI_NY_GDP_DEFL_KD_ZG</code></dd></div>
+            <div><dt>PIB por habitante, dólares de 2015</dt><dd><code>WB_WDI_NY_GDP_PCAP_KD</code></dd></div>
+          </dl>
+          <p>El IPC de Argentina recién empieza en 2018 y el de Venezuela solo cubre 2009-2016, así que donde falta usamos el deflactor del PIB. Además descartamos el PIB de Honduras anterior a 2000, porque la serie tiene un quiebre.</p>
+        </div>
+
+        <figure class="grafico revelar" data-grafico="inflacion">
+          <h3 class="grafico-titulo"></h3>
+          <p class="grafico-bajada"></p>
+          <div class="grafico-lienzo"></div>
+          <figcaption>Fuente: Banco Mundial, Data360 (World Development Indicators). <a href="datos/inflacion.csv" download>Descargar los datos</a></figcaption>
+        </figure>
+        <dl class="ficha revelar">
+          <div><dt>Pregunta</dt><dd>¿Cómo evolucionó la inflación en la región?</dd></div>
+          <div><dt>Codificación</dt><dd>Un país por fila y un año por columna. El color marca el rango de inflación, en un solo tono.</dd></div>
+          <div><dt>Interacción</dt><dd>Al pasar el mouse se resalta el país y aparece el valor exacto.</dd></div>
+        </dl>
+
+        <figure class="grafico revelar" data-grafico="pib">
+          <h3 class="grafico-titulo"></h3>
+          <p class="grafico-bajada"></p>
+          <div class="grafico-lienzo"></div>
+          <figcaption>Fuente: Banco Mundial, Data360 (World Development Indicators). <a href="datos/pib.csv" download>Descargar los datos</a></figcaption>
+        </figure>
+        <dl class="ficha revelar">
+          <div><dt>Pregunta</dt><dd>¿Qué pasó con el ingreso por habitante?</dd></div>
+          <div><dt>Codificación</dt><dd>Argentina en azul, el país elegido en gris oscuro y el resto de la región de fondo.</dd></div>
+          <div><dt>Interacción</dt><dd>Un menú cambia el país de comparación y una línea vertical muestra los dos valores de cada año.</dd></div>
+        </dl>
+
+        <figure class="grafico revelar" data-grafico="inflacion_vs_pib">
+          <h3 class="grafico-titulo"></h3>
+          <p class="grafico-bajada"></p>
+          <div class="grafico-lienzo"></div>
+          <figcaption>Fuente: Banco Mundial, Data360 (World Development Indicators). <a href="datos/inflacion_vs_pib.csv" download>Descargar los datos</a></figcaption>
+        </figure>
+        <dl class="ficha revelar">
+          <div><dt>Pregunta</dt><dd>¿Van de la mano la inflación y el crecimiento?</dd></div>
+          <div><dt>Codificación</dt><dd>Inflación mediana en escala logarítmica contra la variación del PIB por habitante, 2011-2025.</dd></div>
+          <div><dt>Interacción</dt><dd>Cada punto tiene un área amplia: al acercar el mouse se agranda y muestra sus valores.</dd></div>
+        </dl>
+      </div>
+    </section>
+
+    <!-- ============ PUNTO 3: STORYTELLING ============ -->
+    <section class="panel" id="historia" role="tabpanel" aria-labelledby="tab-historia" tabindex="0" hidden>
+      <aside class="panel-guia revelar">
+        <h2>Storytelling</h2>
+        <div class="consigna">
+          <p class="consigna-etiqueta">Consigna</p>
+          <p>Contar una historia basada en los datos recolectados, con las herramientas vistas en la materia: Tableau, Flourish, Datawrapper, etc.</p>
+        </div>
+        <p class="panel-resumen">Una nota que combina los tres gráficos de Altair con un ranking animado de Flourish y un mapa de Datawrapper.</p>
+        <nav class="indice" aria-label="Secciones de la nota">
+          <p class="indice-titulo">En esta nota</p>
+          <ol>
+            <li><a href="#nota-inflacion">Cuatro décadas para bajar la inflación</a></li>
+            <li><a href="#nota-pib">Del primero al quinto puesto</a></li>
+            <li><a href="#nota-cruce">Inflación alta, economía quieta</a></li>
+            <li><a href="#nota-final">¿El final de la excepción?</a></li>
+            <li><a href="#nota-metodo">Cómo hicimos esta nota</a></li>
+          </ol>
+        </nav>
+      </aside>
+
+      <article class="panel-contenido nota">
+        <header class="bloque revelar">
+          <p class="nota-bajada">En 1990, casi toda América Latina vivía con inflación de dos dígitos o más. Hoy, 15 de los 18 países de la región la tienen por debajo del 10% anual. Argentina sigue afuera de ese grupo, y su economía produce por habitante menos que en 2011.</p>
+          <p class="nota-firma">Por Nombre Apellido, Nombre Apellido y Nombre Apellido. Noviembre de 2026.</p>
+        </header>
+
+        <section class="bloque" id="nota-inflacion">
+          <h3 class="revelar">Cuatro décadas para bajar la inflación</h3>
+          <p class="revelar">En 1990, América Latina era sinónimo de inflación. De los 18 países que analizamos, solo Panamá tenía precios que subían menos de 10% por año, y cinco superaban el 100%: Argentina, Brasil, Nicaragua, Perú y Uruguay. La mediana regional era de 39%.</p>
+          <p class="revelar">Treinta y cinco años después, el panorama es otro. La mayoría de los países bajó la inflación a un dígito entre mediados de los 90 y principios de los 2000, y no volvió atrás. En 2025, 15 de los 18 estuvieron por debajo del 10% y la mediana regional fue de 4%.</p>
+          <figure class="grafico revelar" data-grafico="inflacion">
+            <h4 class="grafico-titulo"></h4>
+            <p class="grafico-bajada"></p>
+            <div class="grafico-lienzo"></div>
+            <figcaption>Fuente: Banco Mundial, Data360 (World Development Indicators). <a href="datos/inflacion.csv" download>Descargar los datos</a></figcaption>
+          </figure>
+          <p class="revelar">Argentina es la excepción. Desde 1961 tuvo inflación de un dígito en solo 11 años: 1969, 1970 y los nueve de la convertibilidad, de 1993 a 2001. En 2024 llegó a 219,9%, la más alta de la región y la mayor del país desde 1990.</p>
+        </section>
+
+        <section class="bloque" id="nota-pib">
+          <h3 class="revelar">Del primero al quinto puesto</h3>
+          <p class="revelar">En 1960, Argentina tenía el PIB por habitante más alto de América Latina: 7.397 dólares de 2015, 2,3 veces el de Chile. Durante medio siglo creció a los tirones, con crisis cada pocos años, y llegó a su máximo en 2011, con 14.041 dólares.</p>
+          <p class="revelar">Desde entonces no volvió a alcanzarlo: en 2025 fue de 13.287 dólares, un 5,4% menos. Hoy cuatro países de la región la superan, y ninguno volvió a quedar detrás desde que la pasó: Uruguay en 2009, Panamá en 2014, Chile en 2018 y Costa Rica en 2019.</p>
+          <figure class="grafico revelar" data-grafico="pib">
+            <h4 class="grafico-titulo"></h4>
+            <p class="grafico-bajada"></p>
+            <div class="grafico-lienzo"></div>
+            <figcaption>Fuente: Banco Mundial, Data360 (World Development Indicators). <a href="datos/pib.csv" download>Descargar los datos</a></figcaption>
+          </figure>
+          <p class="revelar">El ranking año por año muestra el recorrido completo:</p>
+          <figure class="grafico grafico-externo revelar">
+            <!-- Flourish: bar chart race publicado. app.js carga el iframe (data-src) al abrir la pestaña. -->
+            <iframe title="Ranking del PIB por habitante en América Latina, 1960-2025" data-src="https://flo.uri.sh/visualisation/30791854/embed" scrolling="no"></iframe>
+            <figcaption>Hecho con <a href="https://public.flourish.studio/visualisation/30791854/">Flourish</a>. <a href="datos/flourish_ranking_pib.csv" download>Descargar los datos</a></figcaption>
+          </figure>
+        </section>
+
+        <section class="bloque" id="nota-cruce">
+          <h3 class="revelar">Inflación alta, economía quieta</h3>
+          <p class="revelar">¿Son dos historias o una? Al cruzar las dos variables para los últimos quince años, Argentina y Venezuela quedan solas en un rincón. Son los únicos países de la región con una inflación mediana de dos dígitos o más, y los únicos que hoy producen menos por habitante que en 2011.</p>
+          <figure class="grafico revelar" data-grafico="inflacion_vs_pib">
+            <h4 class="grafico-titulo"></h4>
+            <p class="grafico-bajada"></p>
+            <div class="grafico-lienzo"></div>
+            <figcaption>Fuente: Banco Mundial, Data360 (World Development Indicators). <a href="datos/inflacion_vs_pib.csv" download>Descargar los datos</a></figcaption>
+          </figure>
+          <p class="revelar">El resto de la región, con inflaciones medianas de entre menos de 1% (Panamá) y 8% (Uruguay), creció entre 7% (México y Brasil) y 61% (República Dominicana).</p>
+          <p class="revelar">La comparación no demuestra que una cosa cause la otra: la inflación persistente suele ser síntoma de desequilibrios macroeconómicos que también frenan la inversión y el crecimiento. Pero la compañía en la que queda Argentina dice mucho. Entre 2011 y 2025, solo siete países del mundo tuvieron una inflación mediana de 20% o más. Argentina es el tercero, detrás de Venezuela y Sudán del Sur, y por delante de Siria, Sudán, Irán y Malawi.</p>
+        </section>
+
+        <section class="bloque" id="nota-final">
+          <h3 class="revelar">¿El final de la excepción?</h3>
+          <p class="revelar">En 2025 la inflación argentina bajó a 39,1%, su nivel más bajo desde 2018. El dato sale del deflactor del PIB, porque el WDI todavía no tiene el IPC argentino de ese año. La baja es fuerte, pero el mapa de la región muestra la distancia que falta. Solo tres países superaron el 10%: Venezuela, Argentina y Bolivia. La mitad de la región tuvo 4% o menos.</p>
+          <figure class="grafico grafico-externo revelar">
+            <!-- Datawrapper: mapa publicado. app.js carga el iframe (data-src) al abrir la pestaña y le ajusta la altura. -->
+            <iframe id="datawrapper-chart-KllOm" title="En 2025, solo tres países de la región superaron el 10% de inflación" aria-label="Mapa coroplético" data-src="https://datawrapper.dwcdn.net/KllOm/1/" scrolling="no"></iframe>
+            <figcaption>Hecho con <a href="https://datawrapper.dwcdn.net/KllOm/1/">Datawrapper</a>. <a href="datos/datawrapper_mapa_inflacion.csv" download>Descargar los datos</a></figcaption>
+          </figure>
+          <p class="revelar">Para llegar al nivel típico de sus vecinos, la inflación argentina tendría que ser unas diez veces menor que la de 2025. La región muestra que es posible: casi todos sus países lo lograron hace más de veinte años y lo sostuvieron desde entonces.</p>
+        </section>
+
+        <section class="bloque nota-metodo revelar" id="nota-metodo">
+          <h3>Cómo hicimos esta nota</h3>
+          <p>Todos los datos salen de la API Data360 del Banco Mundial, base World Development Indicators. La exploración de la API está en la pestaña del punto 1 y el desarrollo de los gráficos, en la del punto 2. Los tres gráficos principales se hicieron con Altair; el ranking, con Flourish, y el mapa, con Datawrapper.</p>
+          <p class="nota-enlaces">
+            <a class="enlace-externo" href="https://github.com/USUARIO/REPO/blob/main/tp_data360.ipynb" data-repo="blob/main/tp_data360.ipynb">Ver el notebook</a>
+            <a class="enlace-externo" href="https://colab.research.google.com/github/USUARIO/REPO/blob/main/tp_data360.ipynb" data-colab>Abrir en Colab</a>
+          </p>
+        </section>
+      </article>
+    </section>
+  </main>
+
+  <footer class="pie">
+    <div class="contenedor pie-contenido">
+      <p><strong>La excepción argentina.</strong> Trabajo práctico de Visualización de la Información, ITBA, 2026.</p>
+      <p>Equipo: Nombre Apellido, Nombre Apellido y Nombre Apellido.</p>
+      <p>Datos: Banco Mundial, Data360 (licencia CC BY 4.0).</p>
+    </div>
+  </footer>
+</body>
+</html>
